@@ -1,11 +1,17 @@
-// GraphicsPlugin.cpp : This file contains the 'main' function. Program execution begins and ends there.
+// GraphicsTester.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
 
 #include <iostream>
-
+#include "../RenderComponent.h"
+#include "../RenderSystem.h"
 int main()
 {
-    std::cout << "Hello World!\n";
+	auto rc = new RenderComponent();
+	rc->init();
+	rc->cleanup();
+	auto rs = new RenderSystem();
+	rs->init(100, 100);
+	rs->cleanup();
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
