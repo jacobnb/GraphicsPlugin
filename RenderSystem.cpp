@@ -1,7 +1,7 @@
 #include "RenderSystem.h"
 #include <iostream>
-#include "include/glad/glad.h"
-
+//#include "include/glad/glad.h"
+//#include "GLFW/glfw3.h"
 RenderSystem::RenderSystem()
 {
 	winWidth = 1920;
@@ -32,6 +32,30 @@ bool RenderSystem::cleanup()
 	return true;
 }
 
+void RenderSystem::doMain() {
+	//glfwInit();
+	//glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	//glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	//glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+	//GLFWwindow* window = glfwCreateWindow(800, 600, "LearnOpenGL", NULL, NULL);
+	//if (window == NULL)
+	//{
+	//	std::cout << "Failed to create GLFW window" << std::endl;
+	//	glfwTerminate();
+	//	return;
+	//}
+	//glfwMakeContextCurrent(window);
+
+	//if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+	//{
+	//	std::cout << "Failed to initialize GLAD" << std::endl;
+	//	return;
+	//}
+	//glViewport(0, 0, 800, 600);
+
+
+}
 
 
 

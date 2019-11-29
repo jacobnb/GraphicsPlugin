@@ -14,6 +14,8 @@ public:
 	void draw();
 	bool LoadImage(std::string path, std::string texName);
 	void DisplayImage(std::string imgName, int x, int y);
+
+	void doMain();
 private:
 	// Window* 
 	int winWidth, winHeight;

@@ -11,6 +11,7 @@ int main()
 	rc->cleanup();
 	auto rs = new RenderSystem();
 	rs->init(100, 100);
+	rs->doMain();
 	rs->cleanup();
 }
 
