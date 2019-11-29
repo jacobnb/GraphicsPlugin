@@ -1,5 +1,6 @@
 #include "RenderSystem.h"
 #include <iostream>
+#include "include/glad/glad.h"
 
 RenderSystem::RenderSystem()
 {
