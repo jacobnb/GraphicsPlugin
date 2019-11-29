@@ -1,7 +1,8 @@
 #pragma once
 #include <map>
 #include <string>
-
+#include "include/glad/glad.h"
+#include "GLFW/glfw3.h"
 
 // working on https://learnopengl.com/Model-Loading/Mesh - added assimp to build bat files.
 
@@ -17,6 +18,7 @@ public:
 
 	void doMain();
 private:
+
 	// Window* 
 	int winWidth, winHeight;
 	// camera* ?
