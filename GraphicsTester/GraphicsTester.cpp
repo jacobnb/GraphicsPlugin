@@ -10,8 +10,9 @@ int main()
 	rc->init();
 	rc->cleanup();
 	auto rs = new RenderSystem();
-	rs->init(100, 100);
+	rs->init(800, 600);
 	rs->doMain();
+	while (rs->draw());
 	rs->cleanup();
 }
 

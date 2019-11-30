@@ -1,16 +1,13 @@
 #include "RenderSystem.h"
 #include <iostream>
 
-void framebuffer_size_callback(GLFWwindow* window, int width, int height)
-{
-	glViewport(0, 0, width, height);
-}
+const char* vertshader = "#version 330 core \n layout(location = 0) in vec3 aPos;\n void main() \n {	gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);}";
+const char* fragShader = "#version 330 core \n out vec4 FragColor; void main(){	FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);}";
 
 RenderSystem::RenderSystem()
 {
-	winWidth = 1920;
-	winHeight = 1280;
 	std::cout << "Render System Constructed.\n";
+	window = nullptr;
 }
 
 RenderSystem::~RenderSystem()
@@ -20,54 +17,136 @@ RenderSystem::~RenderSystem()
 
 bool RenderSystem::init(int windowWidth, int windowHeight)
 {
-	winWidth = windowWidth;
-	winHeight = windowHeight;
-	std::cout << "Render System Initialized.\n";
-
-	
-	return true;
-}
-
-bool RenderSystem::cleanup()
-{
-	std::cout << "Render System Cleaned Up.\n";
-
-
-	return true; 
-}
-
-void RenderSystem::doMain() {
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	GLFWwindow* window = glfwCreateWindow(800, 600, "LearnOpenGL", NULL, NULL);
+	window = glfwCreateWindow(windowWidth, windowHeight, "LearnOpenGL", NULL, NULL);
 	if (window == NULL)
 	{
 		std::cout << "Failed to create GLFW window" << std::endl;
 		glfwTerminate();
-		return;
+		return false;
 	}
 	glfwMakeContextCurrent(window);
 
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{
 		std::cout << "Failed to initialize GLAD" << std::endl;
-		return;
+		return false;
 	}
 	glViewport(0, 0, 800, 600);
 
-	
+	auto framebuffer_size_callback = [](GLFWwindow* window, int width, int height) -> void {
+		glViewport(0, 0, width, height);
+	};
 
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+	std::cout << "Render System Initialized.\n";
+	return true;
+}
 
-	while (!glfwWindowShouldClose(window))
-	{
-		glfwSwapBuffers(window);
-		glfwPollEvents();
+bool RenderSystem::cleanup()
+{
+	std::cout << "Render System Cleaned Up.\n";
+	return true; 
+}
+
+bool RenderSystem::draw()
+{
+	// check and call events and swap the buffers
+	glfwPollEvents();
+	glfwSwapBuffers(window);
+	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT);
+	//render loop
+	glUseProgram(shaderProgram);
+	glBindVertexArray(VAO);
+	glDrawArrays(GL_TRIANGLES, 0, 3);
+
+	if (glfwWindowShouldClose(window)) {
+		// TODO: !! Shouldn't be processing input in renderer.
+		glfwTerminate();
+		return false;
 	}
-	glfwTerminate();
+	return true;
+}
+
+void RenderSystem::doMain() {
+	float vertices[] = {
+	-0.5f, -0.5f, 0.0f,
+	 0.5f, -0.5f, 0.0f,
+	 0.0f,  0.5f, 0.0f
+	};
+	
+	// make a buffer, id VBO
+	unsigned int VBO;
+	glGenBuffers(1, &VBO);
+	// bind buffer
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+
+	//copy data into buffer.
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+	// Vertex Shader
+	unsigned int vertexShader;
+	vertexShader = glCreateShader(GL_VERTEX_SHADER);
+	glShaderSource(vertexShader, 1, &vertshader, NULL);
+	glCompileShader(vertexShader);
+
+	//check errors
+	int  success;
+	char infoLog[512];
+	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
+	if (!success)
+	{
+		glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
+		std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+	}
+
+	// Fragment Shader
+	unsigned int fragmentShader;
+	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+	glShaderSource(fragmentShader, 1, &fragShader, NULL);
+	glCompileShader(fragmentShader);
+	//check errors
+	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
+	if (!success)
+	{
+		glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
+		std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+	}
+
+	shaderProgram;
+	shaderProgram = glCreateProgram();
+	glAttachShader(shaderProgram, vertexShader);
+	glAttachShader(shaderProgram, fragmentShader);
+	glLinkProgram(shaderProgram);
+	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
+	if (!success) {
+		glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
+		std::cout << "ERROR::SHADER::PROGRAM\n" << infoLog << std::endl;
+	}
+
+	glUseProgram(shaderProgram);
+
+	// Once shaders are linked to program can delete.
+	glDeleteShader(vertexShader);
+	glDeleteShader(fragmentShader);
+
+	// how to interpret the vertex data.
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+
+	VAO;
+	glGenVertexArrays(1, &VAO);
+
+	glBindVertexArray(VAO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
 }
 
 

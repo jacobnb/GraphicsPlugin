@@ -12,14 +12,14 @@ public:
 	~RenderSystem();
 	bool init(int windowWidth, int windowHeight);
 	bool cleanup();
-	void draw();
+	bool draw();
 	bool LoadImage(std::string path, std::string texName);
 	void DisplayImage(std::string imgName, int x, int y);
 
 	void doMain();
 private:
+	GLFWwindow* window;
 
-	// Window* 
-	int winWidth, winHeight;
-	// camera* ?
+	unsigned int VAO;
+	unsigned int shaderProgram;
 };
