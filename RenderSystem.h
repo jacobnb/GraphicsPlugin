@@ -3,8 +3,9 @@
 #include <string>
 #include "include/glad/glad.h"
 #include "GLFW/glfw3.h"
+#include <vector>
 
-// working on https://learnopengl.com/Model-Loading/Mesh - added assimp to build bat files.
+class RenderComponent;
 
 class RenderSystem {
 public:
@@ -16,10 +17,13 @@ public:
 	bool LoadImage(std::string path, std::string texName);
 	void DisplayImage(std::string imgName, int x, int y);
 
+	void addRenderComp(RenderComponent* rc);
 	void doMain();
 private:
 	GLFWwindow* window;
 
-	unsigned int VAO;
 	unsigned int shaderProgram;
+
+	bool initShaderProgram();
+	std::vector<RenderComponent*> renderComponents;
 };

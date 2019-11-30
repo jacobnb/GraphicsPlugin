@@ -6,13 +6,17 @@
 #include "../RenderSystem.h"
 int main()
 {
-	auto rc = new RenderComponent();
-	rc->init();
-	rc->cleanup();
+
 	auto rs = new RenderSystem();
 	rs->init(800, 600);
-	rs->doMain();
+	auto rc = new RenderComponent();
+	rc->init();
+	
+	rc->setMesh();
+	rs->addRenderComp(rc);
+
 	while (rs->draw());
+	rc->cleanup();
 	rs->cleanup();
 }
 

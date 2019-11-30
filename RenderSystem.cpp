@@ -1,4 +1,5 @@
 #include "RenderSystem.h"
+#include "RenderComponent.h"
 #include <iostream>
 
 const char* vertshader = "#version 330 core \n layout(location = 0) in vec3 aPos;\n void main() \n {	gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);}";
@@ -43,6 +44,13 @@ bool RenderSystem::init(int windowWidth, int windowHeight)
 	};
 
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+
+	if (!initShaderProgram()) {
+		std::cout << "Failed to init shader program.\n";
+		return false;
+	}
+
+
 	std::cout << "Render System Initialized.\n";
 	return true;
 }
@@ -60,11 +68,14 @@ bool RenderSystem::draw()
 	glfwSwapBuffers(window);
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
-	//render loop
-	glUseProgram(shaderProgram);
-	glBindVertexArray(VAO);
-	glDrawArrays(GL_TRIANGLES, 0, 3);
 
+	glUseProgram(shaderProgram);
+	for(RenderComponent* rc : renderComponents)
+	{
+		glBindVertexArray(rc->getVAO());
+		glDrawArrays(GL_TRIANGLES, 0, 3);
+	}
+	
 	if (glfwWindowShouldClose(window)) {
 		// TODO: !! Shouldn't be processing input in renderer.
 		glfwTerminate();
@@ -73,28 +84,22 @@ bool RenderSystem::draw()
 	return true;
 }
 
+void RenderSystem::addRenderComp(RenderComponent* rc)
+{
+	renderComponents.push_back(rc);
+}
+
 void RenderSystem::doMain() {
-	float vertices[] = {
-	-0.5f, -0.5f, 0.0f,
-	 0.5f, -0.5f, 0.0f,
-	 0.0f,  0.5f, 0.0f
-	};
-	
-	// make a buffer, id VBO
-	unsigned int VBO;
-	glGenBuffers(1, &VBO);
-	// bind buffer
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
-	//copy data into buffer.
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+}
 
-	// Vertex Shader
+bool RenderSystem::initShaderProgram()
+{
+	//=========Vertex Shader==========
 	unsigned int vertexShader;
 	vertexShader = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(vertexShader, 1, &vertshader, NULL);
 	glCompileShader(vertexShader);
-
 	//check errors
 	int  success;
 	char infoLog[512];
@@ -103,9 +108,10 @@ void RenderSystem::doMain() {
 	{
 		glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
 		std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+		return false;
 	}
 
-	// Fragment Shader
+	//===========Fragment Shader=============
 	unsigned int fragmentShader;
 	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
 	glShaderSource(fragmentShader, 1, &fragShader, NULL);
@@ -116,9 +122,9 @@ void RenderSystem::doMain() {
 	{
 		glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
 		std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+		return false;
 	}
 
-	shaderProgram;
 	shaderProgram = glCreateProgram();
 	glAttachShader(shaderProgram, vertexShader);
 	glAttachShader(shaderProgram, fragmentShader);
@@ -127,26 +133,12 @@ void RenderSystem::doMain() {
 	if (!success) {
 		glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
 		std::cout << "ERROR::SHADER::PROGRAM\n" << infoLog << std::endl;
+		return false;
 	}
-
-	glUseProgram(shaderProgram);
-
 	// Once shaders are linked to program can delete.
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
-
-	// how to interpret the vertex data.
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
-
-	VAO;
-	glGenVertexArrays(1, &VAO);
-
-	glBindVertexArray(VAO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
+	return true;
 }
 
 
