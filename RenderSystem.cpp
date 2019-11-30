@@ -67,14 +67,21 @@ bool RenderSystem::draw()
 	glfwPollEvents();
 	glfwSwapBuffers(window);
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT);
+	// glClear(GL_COLOR_BUFFER_BIT);
 
 	glUseProgram(shaderProgram);
-	for(RenderComponent* rc : renderComponents)
-	{
-		glBindVertexArray(rc->getVAO());
-		glDrawArrays(GL_TRIANGLES, 0, 3);
-	}
+	/*for(RenderComponent* rc : renderComponents)
+	{*/
+
+	glBindVertexArray(renderComponents[0]->getVAO());
+	glDrawArrays(GL_TRIANGLES, 0, 3);
+
+	glBindVertexArray(renderComponents[1]->getVAO());
+	glDrawArrays(GL_TRIANGLES, 0, 3);
+
+		
+		// glBindVertexArray(0);
+	//}
 	
 	if (glfwWindowShouldClose(window)) {
 		// TODO: !! Shouldn't be processing input in renderer.

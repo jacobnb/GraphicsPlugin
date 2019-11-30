@@ -16,6 +16,9 @@ RenderComponent::~RenderComponent()
 bool RenderComponent::init()
 {
 	std::cout << "Render Component Init.\n";
+	// init buffers
+	glGenBuffers(1, &VBO);
+	glGenVertexArrays(1, &VAO);
 	return true;
 }
 
@@ -33,9 +36,9 @@ void RenderComponent::setMesh()
 	 0.5f, -0.5f, 0.0f,
 	 0.0f,  0.5f, 0.0f
 	};
-	// init buffer
-	glGenBuffers(1, &VBO);
-	// bind buffer
+	
+	// bind buffers
+	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	//copy data into buffer.
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
@@ -44,11 +47,18 @@ void RenderComponent::setMesh()
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 
-	glGenVertexArrays(1, &VAO);
+}
 
+void RenderComponent::setMesh(float* vertices, int length)
+{
+	// bind buffers
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	//copy data into buffer.
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float)*length, vertices, GL_STATIC_DRAW);
+
+	// how to interpret the vertex data.
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, length / 3 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
+
 }

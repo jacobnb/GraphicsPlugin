@@ -11,9 +11,27 @@ int main()
 	rs->init(800, 600);
 	auto rc = new RenderComponent();
 	rc->init();
-	
+	auto rctwo = new RenderComponent();
+	rctwo->init();
+	float arr[] = {
+	-1.0f, -1.0f, 0.0f,
+	 -0.5f, -0.5f, 0.0f,
+	 -1.0f,  0.5f, 0.0f
+	};
+	float vertices[] = {
+	-0.5f, -0.5f, 0.0f,
+	 0.5f, -0.5f, 0.0f,
+	 0.0f,  0.5f, 0.0f
+	};
+
+	rctwo->setMesh(arr, 9);
+	rs->addRenderComp(rctwo);
+
 	rc->setMesh();
 	rs->addRenderComp(rc);
+
+	
+
 
 	while (rs->draw());
 	rc->cleanup();
