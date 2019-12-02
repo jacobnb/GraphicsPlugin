@@ -1,0 +1,19 @@
+Render System Improvements
+
+Real TODO:
+-Move shaders into actual file from string.
+
+
+
+
+Architecture:
+Graph it out.
+
+Low Priorioty:
+-Move input out of renderer.
+- Render Component: check if glfw is initted.
+
+
+
+Done!
+-Figure out how to draw multiple vaos.
